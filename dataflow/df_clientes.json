@@ -13,7 +13,15 @@
 					"name": "source1"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "clientes_sql",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "derivedColumn1"
@@ -23,6 +31,9 @@
 				},
 				{
 					"name": "aggregate1"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -52,7 +63,41 @@
 				"          edad = first(edad),",
 				"          nivel_fidelidad = first(nivel_fidelidad),",
 				"          email = first(email),",
-				"          telefono = first(telefono)) ~> aggregate1"
+				"          telefono = first(telefono)) ~> aggregate1",
+				"aggregate1 derive(edad = toInteger(edad),",
+				"          fecha_registro = toDate(fecha_registro)) ~> derivedColumn2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          cliente_id as string,",
+				"          nombre as string,",
+				"          ciudad as string,",
+				"          segmento as string,",
+				"          fecha_registro as date,",
+				"          edad as integer,",
+				"          nivel_fidelidad as string,",
+				"          email as string,",
+				"          telefono as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          cliente_id,",
+				"          nombre,",
+				"          ciudad,",
+				"          segmento,",
+				"          fecha_registro,",
+				"          edad,",
+				"          nivel_fidelidad,",
+				"          email,",
+				"          telefono",
+				"     )) ~> sink1"
 			]
 		}
 	}
