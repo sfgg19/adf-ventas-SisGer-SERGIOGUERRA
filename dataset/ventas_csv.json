@@ -18,35 +18,44 @@
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
-			"firstRowAsHeader": false,
+			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
 		"schema": [
 			{
+				"name": "venta_id",
 				"type": "String"
 			},
 			{
+				"name": "fecha_venta",
 				"type": "String"
 			},
 			{
+				"name": "cliente_id",
 				"type": "String"
 			},
 			{
+				"name": "sucursal_id",
 				"type": "String"
 			},
 			{
+				"name": "canal",
 				"type": "String"
 			},
 			{
+				"name": "medio_pago",
 				"type": "String"
 			},
 			{
+				"name": "promocion_id",
 				"type": "String"
 			},
 			{
+				"name": "estado_venta",
 				"type": "String"
 			},
 			{
+				"name": "total_venta",
 				"type": "String"
 			}
 		]
