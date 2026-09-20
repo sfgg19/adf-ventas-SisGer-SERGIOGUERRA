@@ -1,0 +1,59 @@
+{
+	"name": "productos_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sa omnicanal",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "csv"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "productos.csv",
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "producto_id",
+				"type": "String"
+			},
+			{
+				"name": "nombre_producto",
+				"type": "String"
+			},
+			{
+				"name": "categoria",
+				"type": "String"
+			},
+			{
+				"name": "marca",
+				"type": "String"
+			},
+			{
+				"name": "precio_lista",
+				"type": "String"
+			},
+			{
+				"name": "costo_unitario",
+				"type": "String"
+			},
+			{
+				"name": "proveedor",
+				"type": "String"
+			},
+			{
+				"name": "estado_producto",
+				"type": "String"
+			}
+		]
+	}
+}
