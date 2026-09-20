@@ -1,0 +1,91 @@
+{
+	"name": "df_productos",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "productos_csv",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "productos_sql",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          producto_id as string,",
+				"          nombre_producto as string,",
+				"          categoria as string,",
+				"          marca as string,",
+				"          precio_lista as string,",
+				"          costo_unitario as string,",
+				"          proveedor as string,",
+				"          estado_producto as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(nombre_producto = initCap(lower(trim(nombre_producto))),",
+				"          categoria = initCap(lower(trim(categoria))),",
+				"          marca = initCap(lower(trim(marca))),",
+				"          proveedor = initCap(lower(trim(proveedor))),",
+				"          precio_lista = replace(replace(trim(precio_lista), 'Bs ', ''),',' , '.')) ~> derivedColumn1",
+				"derivedColumn1 split(!isNull(producto_id) && !isNull(nombre_producto) && !isNull(precio_lista) && !isNull(costo_unitario) ,",
+				"     disjoint: false) ~> split1@(validos, rechazados)",
+				"split1@validos derive(precio_lista = toDecimal(precio_lista),",
+				"          costo_unitario = toDecimal(costo_unitario)) ~> derivedColumn2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          producto_id as string,",
+				"          nombre_producto as string,",
+				"          categoria as string,",
+				"          marca as string,",
+				"          precio_lista as decimal(12,2),",
+				"          costo_unitario as decimal(12,2),",
+				"          proveedor as string,",
+				"          estado_producto as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          producto_id,",
+				"          nombre_producto,",
+				"          categoria,",
+				"          marca,",
+				"          precio_lista,",
+				"          costo_unitario,",
+				"          proveedor,",
+				"          estado_producto",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

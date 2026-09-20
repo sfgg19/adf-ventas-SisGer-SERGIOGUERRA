@@ -1,0 +1,88 @@
+{
+	"name": "df_detalle_ventas",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "detalle_ventas_csv",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "detalle_ventas_sql",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          detalle_id as string,",
+				"          venta_id as string,",
+				"          producto_id as string,",
+				"          cantidad as string,",
+				"          precio_unitario as string,",
+				"          descuento as string,",
+				"          subtotal as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(cantidad = lower(trim(cantidad)),",
+				"          precio_unitario = replace(replace(trim(precio_unitario), 'Bs ', ''),',' , '.'),",
+				"          descuento = lower(trim(descuento))) ~> derivedColumn1",
+				"derivedColumn1 split(!isInteger(cantidad) || !isDecimal(precio_unitario) || !isDecimal(subtotal) || !isDecimal(precio_unitario) || toDecimal(descuento) < 0 || toDecimal(descuento) > 100,",
+				"     disjoint: false) ~> split1@(rechazados, validos)",
+				"split1@validos derive(cantidad = toInteger(cantidad),",
+				"          precio_unitario = toDecimal(precio_unitario),",
+				"          descuento = toDecimal(descuento),",
+				"          subtotal = toDecimal(subtotal)) ~> derivedColumn2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          detalle_id as string,",
+				"          venta_id as string,",
+				"          producto_id as string,",
+				"          cantidad as integer,",
+				"          precio_unitario as decimal(12,2),",
+				"          descuento as decimal(5,2),",
+				"          subtotal as decimal(12,2)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          detalle_id,",
+				"          venta_id,",
+				"          producto_id,",
+				"          cantidad,",
+				"          precio_unitario,",
+				"          descuento,",
+				"          subtotal",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
