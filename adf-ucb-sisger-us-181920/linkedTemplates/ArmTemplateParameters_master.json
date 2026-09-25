@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-ucb-sisger-us-181920"
+		},
+		"sa omnicanal_accountKey": {
+			"value": ""
+		},
+		"sql omnicanal_password": {
+			"value": ""
+		},
+		"sa omnicanal_properties_typeProperties_url": {
+			"value": "https://saucbsisger181920.dfs.core.windows.net/"
+		},
+		"sql omnicanal_properties_typeProperties_server": {
+			"value": "sql-ucb-sisger-181920.database.windows.net"
+		},
+		"sql omnicanal_properties_typeProperties_database": {
+			"value": "db-ventas"
+		},
+		"sql omnicanal_properties_typeProperties_userName": {
+			"value": "sergioguerra"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
