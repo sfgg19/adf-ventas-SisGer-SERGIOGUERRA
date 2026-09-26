@@ -1,0 +1,94 @@
+{
+	"name": "df_pagos",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "pagos_csv",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "pagos_sql",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          pago_id as string,",
+				"          pedido_id as string,",
+				"          fecha_pago as string,",
+				"          metodo_pago as string,",
+				"          estado_pago as string,",
+				"          monto_pagado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(pago_id = trim(pago_id),",
+				"          pedido_id = trim(pedido_id),",
+				"          metodo_pago = trim(initCap(metodo_pago)),",
+				"          estado_pago = trim(initCap(estado_pago)),",
+				"          monto_pagado = trim(toString(monto_pagado))) ~> derivedColumn1",
+				"derivedColumn1 split(!isNull(pago_id) && pago_id != '' && !isNull(pedido_id) && pedido_id != '' && !isNull(fecha_pago) && fecha_pago != '' && !isNull(monto_pagado) && toDecimal(monto_pagado) > 0,",
+				"     disjoint: false) ~> split1@(validos, rechazados)",
+				"split1@validos aggregate(groupBy(pago_id),",
+				"     pedido_id = first(pedido_id),",
+				"          fecha_pago = first(fecha_pago),",
+				"          metodo_pago = first(metodo_pago),",
+				"          estado_pago = first(estado_pago),",
+				"          monto_pagado = first(monto_pagado)) ~> aggregate1",
+				"aggregate1 derive(fecha_pago = toDate(fecha_pago, 'yyyy-MM-dd'),",
+				"          monto_pagado = toDecimal(monto_pagado, 12, 2)) ~> derivedColumn2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          pago_id as string,",
+				"          pedido_id as string,",
+				"          fecha_pago as date,",
+				"          metodo_pago as string,",
+				"          estado_pago as string,",
+				"          monto_pagado as decimal(12,2)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          pago_id,",
+				"          pedido_id,",
+				"          fecha_pago,",
+				"          metodo_pago,",
+				"          estado_pago,",
+				"          monto_pagado",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
