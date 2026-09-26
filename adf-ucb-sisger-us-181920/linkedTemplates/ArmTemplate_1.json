@@ -6,1157 +6,12 @@
 			"type": "string",
 			"metadata": "Nombre de instancia de Data Factory",
 			"defaultValue": "adf-ucb-sisger-us-181920"
-		},
-		"sa omnicanal_accountKey": {
-			"type": "secureString",
-			"metadata": "Cadena protegida para \"accountKey\"de \"sa omnicanal\""
-		},
-		"sql omnicanal_password": {
-			"type": "secureString",
-			"metadata": "Cadena protegida para \"password\"de \"sql omnicanal\""
-		},
-		"sa omnicanal_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://saucbsisger181920.dfs.core.windows.net/"
-		},
-		"sql omnicanal_properties_typeProperties_server": {
-			"type": "string",
-			"defaultValue": "sql-ucb-sisger-181920.database.windows.net"
-		},
-		"sql omnicanal_properties_typeProperties_database": {
-			"type": "string",
-			"defaultValue": "db-ventas"
-		},
-		"sql omnicanal_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "sergioguerra"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/sa omnicanal')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('sa omnicanal_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('sa omnicanal_accountKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sql omnicanal')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "ewrewr12",
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"server": "[parameters('sql omnicanal_properties_typeProperties_server')]",
-					"database": "[parameters('sql omnicanal_properties_typeProperties_database')]",
-					"encrypt": "optional",
-					"trustServerCertificate": true,
-					"authenticationType": "SQL",
-					"userName": "[parameters('sql omnicanal_properties_typeProperties_userName')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('sql omnicanal_password')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/calificaciones_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "calificaciones.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "calificacion_id",
-						"type": "String"
-					},
-					{
-						"name": "pedido_id",
-						"type": "String"
-					},
-					{
-						"name": "cliente_id",
-						"type": "String"
-					},
-					{
-						"name": "fecha_calificacion",
-						"type": "String"
-					},
-					{
-						"name": "puntuacion",
-						"type": "String"
-					},
-					{
-						"name": "comentario",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/clientes_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "clientes.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "cliente_id",
-						"type": "String"
-					},
-					{
-						"name": "nombre",
-						"type": "String"
-					},
-					{
-						"name": "email",
-						"type": "String"
-					},
-					{
-						"name": "telefono",
-						"type": "String"
-					},
-					{
-						"name": "ciudad",
-						"type": "String"
-					},
-					{
-						"name": "fecha_registro",
-						"type": "String"
-					},
-					{
-						"name": "segmento",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/detalles_pedidos_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "detalle_pedidos.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "detalle_id",
-						"type": "String"
-					},
-					{
-						"name": "pedido_id",
-						"type": "String"
-					},
-					{
-						"name": "producto_id",
-						"type": "String"
-					},
-					{
-						"name": "cantidad",
-						"type": "String"
-					},
-					{
-						"name": "precio_unitario",
-						"type": "String"
-					},
-					{
-						"name": "descuento_linea",
-						"type": "String"
-					},
-					{
-						"name": "total_linea",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/entregas_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "entregas.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "entrega_id",
-						"type": "String"
-					},
-					{
-						"name": "pedido_id",
-						"type": "String"
-					},
-					{
-						"name": "repartidor_id",
-						"type": "String"
-					},
-					{
-						"name": "hora_salida",
-						"type": "String"
-					},
-					{
-						"name": "hora_entrega",
-						"type": "String"
-					},
-					{
-						"name": "tiempo_entrega_min",
-						"type": "String"
-					},
-					{
-						"name": "distancia_km",
-						"type": "String"
-					},
-					{
-						"name": "estado_entrega",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/inventario_diario_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "inventario_diario.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "inventario_id",
-						"type": "String"
-					},
-					{
-						"name": "fecha_inventario",
-						"type": "String"
-					},
-					{
-						"name": "sucursal_id",
-						"type": "String"
-					},
-					{
-						"name": "producto_id",
-						"type": "String"
-					},
-					{
-						"name": "stock_inicial",
-						"type": "String"
-					},
-					{
-						"name": "entradas",
-						"type": "String"
-					},
-					{
-						"name": "salidas",
-						"type": "String"
-					},
-					{
-						"name": "stock_final",
-						"type": "String"
-					},
-					{
-						"name": "punto_reorden",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pagos_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "pagos.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "pago_id",
-						"type": "String"
-					},
-					{
-						"name": "pedido_id",
-						"type": "String"
-					},
-					{
-						"name": "fecha_pago",
-						"type": "String"
-					},
-					{
-						"name": "metodo_pago",
-						"type": "String"
-					},
-					{
-						"name": "estado_pago",
-						"type": "String"
-					},
-					{
-						"name": "monto_pagado",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pedidos_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "pedidos.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "pedido_id",
-						"type": "String"
-					},
-					{
-						"name": "fecha_pedido",
-						"type": "String"
-					},
-					{
-						"name": "hora_pedido",
-						"type": "String"
-					},
-					{
-						"name": "cliente_id",
-						"type": "String"
-					},
-					{
-						"name": "sucursal_id",
-						"type": "String"
-					},
-					{
-						"name": "canal",
-						"type": "String"
-					},
-					{
-						"name": "tipo_servicio",
-						"type": "String"
-					},
-					{
-						"name": "estado_pedido",
-						"type": "String"
-					},
-					{
-						"name": "promocion_id",
-						"type": "String"
-					},
-					{
-						"name": "subtotal",
-						"type": "String"
-					},
-					{
-						"name": "costo_delivery",
-						"type": "String"
-					},
-					{
-						"name": "descuento",
-						"type": "String"
-					},
-					{
-						"name": "impuesto",
-						"type": "String"
-					},
-					{
-						"name": "total_pedido",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/productos_menu_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "productos_menu.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "producto_id",
-						"type": "String"
-					},
-					{
-						"name": "nombre_producto",
-						"type": "String"
-					},
-					{
-						"name": "categoria",
-						"type": "String"
-					},
-					{
-						"name": "precio_lista",
-						"type": "String"
-					},
-					{
-						"name": "costo_estimado",
-						"type": "String"
-					},
-					{
-						"name": "disponible",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/promociones_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "promociones.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "promocion_id",
-						"type": "String"
-					},
-					{
-						"name": "nombre_promocion",
-						"type": "String"
-					},
-					{
-						"name": "fecha_inicio",
-						"type": "String"
-					},
-					{
-						"name": "fecha_fin",
-						"type": "String"
-					},
-					{
-						"name": "porcentaje_descuento",
-						"type": "String"
-					},
-					{
-						"name": "canal_aplicable",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/repartidores_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "repartidores.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "repartidor_id",
-						"type": "String"
-					},
-					{
-						"name": "nombre_repartidor",
-						"type": "String"
-					},
-					{
-						"name": "tipo_vehiculo",
-						"type": "String"
-					},
-					{
-						"name": "ciudad_base",
-						"type": "String"
-					},
-					{
-						"name": "fecha_alta",
-						"type": "String"
-					},
-					{
-						"name": "activo",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/restaurantes_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "restaurantes.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "restaurante_id",
-						"type": "String"
-					},
-					{
-						"name": "nombre_restaurante",
-						"type": "String"
-					},
-					{
-						"name": "tipo_cocina",
-						"type": "String"
-					},
-					{
-						"name": "calificacion_promedio",
-						"type": "String"
-					},
-					{
-						"name": "activo",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sucursales_csv')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sa omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "csv"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "sucursales.csv",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "sucursal_id",
-						"type": "String"
-					},
-					{
-						"name": "restaurante_id",
-						"type": "String"
-					},
-					{
-						"name": "nombre_sucursal",
-						"type": "String"
-					},
-					{
-						"name": "ciudad",
-						"type": "String"
-					},
-					{
-						"name": "zona",
-						"type": "String"
-					},
-					{
-						"name": "direccion",
-						"type": "String"
-					},
-					{
-						"name": "capacidad_mesas",
-						"type": "String"
-					},
-					{
-						"name": "tiene_delivery",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sa omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/calificaciones_sql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sql omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "sql"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "calificacion_id",
-						"type": "varchar"
-					},
-					{
-						"name": "pedido_id",
-						"type": "varchar"
-					},
-					{
-						"name": "cliente_id",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_calificacion",
-						"type": "date"
-					},
-					{
-						"name": "puntuacion",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "comentario",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "ventas_omnicanal",
-					"table": "calificaciones"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/clientes_sql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sql omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "sql"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "cliente_id",
-						"type": "varchar"
-					},
-					{
-						"name": "nombre",
-						"type": "nvarchar"
-					},
-					{
-						"name": "email",
-						"type": "nvarchar"
-					},
-					{
-						"name": "telefono",
-						"type": "varchar"
-					},
-					{
-						"name": "ciudad",
-						"type": "nvarchar"
-					},
-					{
-						"name": "fecha_registro",
-						"type": "date"
-					},
-					{
-						"name": "segmento",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "ventas_omnicanal",
-					"table": "clientes"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/detalle_pedidos_sql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sql omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "sql"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "detalle_id",
-						"type": "varchar"
-					},
-					{
-						"name": "pedido_id",
-						"type": "varchar"
-					},
-					{
-						"name": "producto_id",
-						"type": "varchar"
-					},
-					{
-						"name": "cantidad",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "precio_unitario",
-						"type": "decimal",
-						"precision": 12,
-						"scale": 2
-					},
-					{
-						"name": "descuento_linea",
-						"type": "decimal",
-						"precision": 12,
-						"scale": 2
-					},
-					{
-						"name": "total_linea",
-						"type": "decimal",
-						"precision": 12,
-						"scale": 2
-					}
-				],
-				"typeProperties": {
-					"schema": "ventas_omnicanal",
-					"table": "detalle_pedidos"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/entregas_sql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sql omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "sql"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "entrega_id",
-						"type": "varchar"
-					},
-					{
-						"name": "pedido_id",
-						"type": "varchar"
-					},
-					{
-						"name": "repartidor_id",
-						"type": "varchar"
-					},
-					{
-						"name": "hora_salida",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "hora_entrega",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "tiempo_entrega_min",
-						"type": "decimal",
-						"precision": 8,
-						"scale": 2
-					},
-					{
-						"name": "distancia_km",
-						"type": "decimal",
-						"precision": 8,
-						"scale": 2
-					},
-					{
-						"name": "estado_entrega",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "ventas_omnicanal",
-					"table": "entregas"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/inventario_diario_sql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sql omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "sql"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "inventario_id",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_inventario",
-						"type": "date"
-					},
-					{
-						"name": "sucursal_id",
-						"type": "varchar"
-					},
-					{
-						"name": "producto_id",
-						"type": "varchar"
-					},
-					{
-						"name": "stock_inicial",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "entradas",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "salidas",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "stock_final",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "punto_reorden",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "ventas_omnicanal",
-					"table": "inventario_diario"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pagos_sql')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sql omnicanal",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "sql"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "pago_id",
-						"type": "varchar"
-					},
-					{
-						"name": "pedido_id",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_pago",
-						"type": "date"
-					},
-					{
-						"name": "metodo_pago",
-						"type": "nvarchar"
-					},
-					{
-						"name": "estado_pago",
-						"type": "nvarchar"
-					},
-					{
-						"name": "monto_pagado",
-						"type": "decimal",
-						"precision": 12,
-						"scale": 2
-					}
-				],
-				"typeProperties": {
-					"schema": "ventas_omnicanal",
-					"table": "pagos"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pedidos_sql')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -1245,9 +100,7 @@
 					"table": "pedidos"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/productos_menu_sql')]",
@@ -1298,9 +151,7 @@
 					"table": "productos_menu"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/promociones_sql')]",
@@ -1349,9 +200,7 @@
 					"table": "promociones"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/repartidores_sql')]",
@@ -1398,9 +247,7 @@
 					"table": "repartidores"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/restaurantes_sql')]",
@@ -1445,9 +292,7 @@
 					"table": "restaurantes"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/sucursales_sql')]",
@@ -1503,9 +348,7 @@
 					"table": "sucursales"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sql omnicanal')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_calificaciones')]",
@@ -1601,10 +444,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/calificaciones_csv')]",
-				"[concat(variables('factoryId'), '/datasets/calificaciones_sql')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_clientes')]",
@@ -1703,10 +543,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/clientes_csv')]",
-				"[concat(variables('factoryId'), '/datasets/clientes_sql')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_detalle-pedidos')]",
@@ -1808,10 +645,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/detalles_pedidos_csv')]",
-				"[concat(variables('factoryId'), '/datasets/detalle_pedidos_sql')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_entregas')]",
@@ -1917,10 +751,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/entregas_csv')]",
-				"[concat(variables('factoryId'), '/datasets/entregas_sql')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_inventario_diario')]",
@@ -2032,10 +863,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/inventario_diario_csv')]",
-				"[concat(variables('factoryId'), '/datasets/inventario_diario_sql')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_pagos')]",
@@ -2132,10 +960,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/pagos_csv')]",
-				"[concat(variables('factoryId'), '/datasets/pagos_sql')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_pedidos')]",
@@ -2272,7 +1097,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/pedidos_csv')]",
 				"[concat(variables('factoryId'), '/datasets/pedidos_sql')]"
 			]
 		},
@@ -2372,7 +1196,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/productos_menu_csv')]",
 				"[concat(variables('factoryId'), '/datasets/productos_menu_sql')]"
 			]
 		},
@@ -2471,7 +1294,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/promociones_csv')]",
 				"[concat(variables('factoryId'), '/datasets/promociones_sql')]"
 			]
 		},
@@ -2570,7 +1392,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/repartidores_csv')]",
 				"[concat(variables('factoryId'), '/datasets/repartidores_sql')]"
 			]
 		},
@@ -2664,7 +1485,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/restaurantes_csv')]",
 				"[concat(variables('factoryId'), '/datasets/restaurantes_sql')]"
 			]
 		},
@@ -2774,7 +1594,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/sucursales_csv')]",
 				"[concat(variables('factoryId'), '/datasets/sucursales_sql')]"
 			]
 		},
